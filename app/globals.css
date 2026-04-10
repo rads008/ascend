@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cream-50: #FFFDF7;
+  --cream-100: #FFF9EC;
+  --cream-200: #FFF3D6;
+  --coral-400: #FF7A65;
+  --coral-500: #F45C43;
+  --gold-400: #EEC84A;
+  --sage-400: #8DB485;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #FFF9EC;
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(244, 92, 67, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(238, 200, 74, 0.04) 0%, transparent 50%);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(244, 92, 67, 0.2); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(244, 92, 67, 0.4); }
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid rgba(244, 92, 67, 0.5);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Animations */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Prose */
+.font-display { font-family: 'Playfair Display', Georgia, serif; }
+.font-body { font-family: 'DM Sans', system-ui, sans-serif; }
+.font-mono { font-family: 'DM Mono', monospace; }
+
+/* Card styles */
+.card {
+  @apply bg-white/80 backdrop-blur-sm rounded-3xl border border-white/60 shadow-soft;
+}
+
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-card hover:-translate-y-0.5;
+}
+
+/* Pill / badge */
+.pill {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+/* Gradient text */
+.text-gradient {
+  background: linear-gradient(135deg, #F45C43 0%, #EEC84A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Progress bar */
+.progress-bar {
+  @apply h-1.5 rounded-full bg-cream-200 overflow-hidden;
+}
+.progress-fill {
+  @apply h-full rounded-full transition-all duration-700 ease-out;
+}
+
+/* Checkbox */
+input[type="checkbox"] {
+  accent-color: #F45C43;
+}
+
+/* Number input no spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
