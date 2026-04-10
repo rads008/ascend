@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = (session.user as any).id;
@@ -11,11 +16,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const body = await req.json();
   const { completed, title, priority, estimatedMins, deadline, pillarId } = body;
 
-  const task = await prisma.task.findFirst({ where: { id: params.id, userId } });
+  const task = await prisma.task.findFirst({ where: { id, userId } });
   if (!task) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const updated = await prisma.task.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       ...(completed !== undefined && {
         completed,
@@ -30,7 +35,6 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     include: { pillar: true },
   });
 
-  // Update streak if completing a task
   if (completed) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -40,7 +44,6 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       create: { userId, date: today, tasksCompleted: 1 },
     });
 
-    // Update pillar last activity
     await prisma.pillar.update({
       where: { id: task.pillarId },
       data: { lastActivity: new Date() },
@@ -50,14 +53,19 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   return NextResponse.json(updated);
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = (session.user as any).id;
 
-  const task = await prisma.task.findFirst({ where: { id: params.id, userId } });
+  const task = await prisma.task.findFirst({ where: { id, userId } });
   if (!task) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  await prisma.task.delete({ where: { id: params.id } });
+  await prisma.task.delete({ where: { id } });
   return NextResponse.json({ success: true });
 }
